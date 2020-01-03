@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC  
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+   
+<mapper namespace="com.fh.mapper.ProductMapper">
+	<resultMap id="mm" type="map">
+		<result property="id" column="id" />
+		<result property="name" column="brandName"></result>
+
+	</resultMap>
+<sql id="sql_where">
+	 <where>
+		 <if test="productName !=null and productName !=''">
+			 p.name like concat("%",#{productName},"%")
+		 </if>
+		 <if test="brandId !=null and brandId !=-1">
+			and p.brandId =#{brandId}
+		 </if>
+		 <if test="minPrice !=null ">
+			 and p.price >=#{minPrice}
+		 </if>
+		 <if test="maxPrice !=null ">
+			 and p.price &lt;=#{maxPrice}
+		 </if>
+		 <if test="minDate !=null">
+			 and p.createDate >=#{minDate}
+
+		 </if>
+		 <if test="maxDate !=null">
+			 and p.createDate &lt;=#{maxDate}
+
+		 </if>
+
+
+	 </where>
+
+</sql>
+	<select id="queryList" resultType="product" parameterType="com.fh.param.ProductSearchParam">
+		select * FROM  t_product p
+		<include refid="sql_where"></include>
+		limit #{start},#{length}
+
+	</select>
+
+	<select id="queryTotalCount" resultType="long" parameterType="com.fh.param.ProductSearchParam">
+		select count(*) from t_product p
+		<include refid="sql_where"></include>
+	</select>
+	<select id="getBrandList" resultMap="mm" >
+		select * from t_brand
+
+	</select>
+
+	<select id="queryCount" parameterType="com.fh.param.ProductSearchParam" resultType="long">
+		select count(*) from t_product p
+		<include refid="sql_where"></include>
+
+	</select>
+    <insert id="addProduct" parameterType="product">
+		insert into t_product(name,price,createDate,brandId,filePath,category1,category2,category3,status)
+		values(#{name},#{price},#{createDate},#{brandId},#{filePath},#{category1},#{category2},#{category3},#{status})
+
+	</insert>
+	<select id="queryMapList" parameterType="com.fh.param.ProductSearchParam" resultMap="rm">
+    select p.*,b.brandName 'aaa', CONCAT(ifnull(c1.categoryName,""),if(c2.categoryName is null,'','-->'),ifnull(c2.categoryName,""),if(c3.categoryName is null,'','-->'),ifnull(c3.categoryName,"")) category from t_product p LEFT join t_brand b on p.brandId = b.id
+		LEFT JOIN t_category c1 on p.category1=c1.id
+		LEFT JOIN t_category c2 on p.category2=c2.id
+		LEFT JOIN t_category c3 on p.category3=c3.id
+   <include refid="sql_where"></include>
+		order by p.id desc
+   limit #{start},#{length}
+
+	</select>
+	<resultMap id="rm" type="map">
+		<result column="id" property="id"></result>
+		<result column="name" property="name"></result>
+		<result column="price" property="price"></result>
+		<result column="createDate" property="createDate"></result>
+		<result column="aaa" property="brandName"></result>
+		<result column="category" property="category"></result>
+		<result column="status" property="status"></result>
+	</resultMap>
+
+	<delete id="deleteProduct" parameterType="int">
+
+		delete FROM t_product where id=#{id}
+	</delete>
+
+	<select id="getProductById" parameterType="int" resultType="product">
+		select id,name,price,brandId,date_format(createDate,'%Y-%m-%d' ) createDate ,filePath  from t_product where id=#{zhouwenzuo}
+	</select>
+
+	<update id="updateProduct" parameterType="product">
+
+		update t_product set name=#{name},price=#{price},brandId=#{brandId},createDate=#{createDate},filePath=#{filePath} where id=#{id}
+	</update>
+	<delete id="deleteBatch" parameterType="list">
+		delete from t_product  where id in
+		<foreach collection="list" open="(" close=")" item="item" separator=",">
+			#{item}
+
+		</foreach>
+	</delete>
+	<select id="queryListNoPage" parameterType="com.fh.param.ProductSearchParam" resultType="product">
+		select p.*,b.brandName 'brandName' from t_product p LEFT join t_brand b on p.brandId = b.id
+		<include refid="sql_where"></include>
+		order by p.id desc
+	</select>
+
+	<select id="getBrandIdByBrandName" parameterType="string" resultType="int">
+		SELECT  id from t_brand where brandName =#{brandName}
+
+	</select>
+    <insert id="addBrand" parameterType="brand" useGeneratedKeys="true"  keyColumn="id" keyProperty="id">
+		insert into t_brand(brandName) values(#{brandName})
+	</insert>
+	<insert id="addProductList">
+			insert into t_product(name,price,brandId) values
+		   <foreach collection="list" separator="," item="it">
+		   (#{it.name},#{it.price},#{it.brandId})
+		   </foreach>
+	</insert>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC  
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+   
+<mapper namespace="com.fh.mapper.UserMapper">
+ <select id="getUserByName" resultType="user" parameterType="string">
+	 select * from t_shop_user where userName =#{userName}
+ </select>
+
+    <select id="queryList" resultType="user"  parameterType="com.fh.param.UserSearchParam">
+		select u.* ,CONCAT(ifnull(a1.areaname,""),if(a2.areaname is null,'','-->'),ifnull(a2.areaname,""),if(a3.areaname is null,'','-->'),ifnull(a3.areaname,"")) areaName FROM  t_shop_user u
+		left join t_area a1 on u.area1 =a1.id
+		left join t_area a2 on u.area2 =a2.id
+		left join t_area a3 on u.area3 =a3.id
+
+		limit #{start},#{length}
+	</select>
+    <insert id="addUser" parameterType="user" >
+        insert into t_shop_user(userName,passWord,salt) values (#{userName},#{passWord},#{salt})
+    </insert>
+
+    <select id="queryCount" resultType="long"  parameterType="com.fh.param.UserSearchParam">
+		select count(*) FROM  t_shop_user
+	</select>
+
+</mapper>

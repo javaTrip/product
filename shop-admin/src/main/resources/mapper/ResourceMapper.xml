@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC  
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+   
+<mapper namespace="com.fh.mapper.ResourceMapper">
+ <select id="getCurrentUserResource" resultType="resource" parameterType="int">
+	SELECT tr.* FROM t_resource tr
+LEFT JOIN  t_role_resource rr on tr.id=rr.resourceId
+LEFT JOIN  t_user_role ur on ur.roleId =rr.roleId
+where ur.userId=#{wangao}
+
+ </select>
+
+
+</mapper>

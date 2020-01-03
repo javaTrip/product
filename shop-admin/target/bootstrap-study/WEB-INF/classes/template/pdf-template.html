@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Title</title>
+    <style>
+        body {
+            font-family: simsun
+
+        }
+    </style>
+</head>
+<body>
+<h1>飞狐超市</h1>
+<table border="1px">
+    <tr>
+        <td>商品名称</td>
+        <td>商品价格</td>
+        <td>商品品牌</td>
+    </tr>
+    <#list productList as product>
+    <tr>
+        <td>${product.name}</td>
+        <td>${product.price}</td>
+        <td>${product.brandName}</td>
+    </tr>
+    </#list>
+</table>
+</body>
+</html>

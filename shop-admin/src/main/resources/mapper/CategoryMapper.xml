@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC  
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+   
+<mapper namespace="com.fh.mapper.CategoryMapper">
+ <select id="queryListByPid" resultType="category" parameterType="int">
+	 select * from t_category where pid=#{pid}
+ </select>
+
+    <select id="queryList" resultType="category" >
+		select * FROM  t_category
+	</select>
+
+
+    <insert id="addCategory" parameterType="category" keyProperty="id" useGeneratedKeys="true">
+		insert into t_category(categoryName,pid) values(#{categoryName},#{pid})
+
+	</insert>
+
+
+
+    <delete id="deleteCategory" parameterType="list">
+
+        delete FROM t_category where id in
+        <foreach collection="list" open="(" close=")" item="item" separator=",">
+            #{item}
+        </foreach>
+
+    </delete>
+    <update id="updateCategory" parameterType="category">
+		update t_category set categoryName=#{categoryName},pid=#{pid} where id=#{id}
+	</update>
+</mapper>

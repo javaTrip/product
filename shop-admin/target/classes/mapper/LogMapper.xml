@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC  
+    "-//mybatis.org//DTD Mapper 3.0//EN"  
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+   
+<mapper namespace="com.fh.mapper.LogMapper">
+<sql id="sql_where">
+    <where>
+        <if test="userName !=null and userName !=''">
+            userName like concat('%',#{userName},'%')
+       </if>
+        <if test="status !=null">
+            and status =#{status}
+        </if>
+        <if test="action !=null and action !=''">
+            and action like concat('%',#{action},'%')
+        </if>
+        <if test="minDate !=null">
+            and createDate >=#{minDate}
+
+        </if>
+        <if test="maxDate !=null">
+            and createDate &lt;=#{maxDate}
+
+        </if>
+    </where>
+
+</sql>
+
+    <insert id="addLog" parameterType="log" >
+        insert into t_shop_log(userName,status,createDate,info,paramContent,action) values (#{userName},#{status},#{createDate},#{info},#{paramContent},#{action})
+    </insert>
+   <select id="queryCount" parameterType="com.fh.param.LogSearchParam" resultType="long">
+       select count(*) from t_shop_log
+       <include refid="sql_where"></include>
+   </select>
+    <select id="queryList" parameterType="com.fh.param.LogSearchParam" resultType="log">
+       select * from t_shop_log
+       <include refid="sql_where"></include>
+       limit #{start} ,#{length}
+   </select>
+
+
+</mapper>
